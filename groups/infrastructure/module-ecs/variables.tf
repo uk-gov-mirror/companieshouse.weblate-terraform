@@ -14,7 +14,6 @@ variable "config" {
 variable "efs_security_group_id" {
   description = "The security group ID of the EFS filesystem"
   type        = string
-  default     = "" # ECS db init doesn't need this
 }
 
 variable "ecs_shared_security_group_id" {
@@ -29,6 +28,5 @@ variable "rds_security_group_id" {
 
 variable "redis_security_group_id" {
   description = "The security group ID of the Redis instance"
-  default     = "" # ECS db init doesn't need this
   type        = string
 }

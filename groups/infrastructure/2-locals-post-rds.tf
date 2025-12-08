@@ -114,10 +114,6 @@ locals {
       }
     ]
 
-      # volumes                        = []        # no EFS volumes needed
-      # mount_points                   = []        # no EFS needed
-
-
     # Service configuration
     name_prefix = local.name_prefix
 
@@ -177,20 +173,10 @@ locals {
       service_name = "celery-backup"
     },
     {
-      service_name = "celery-beat"
-    },
-    {
-      service_name                   = "db-init" # custom task (not weblate) run database initialisation as a one-off task
-      env_file                       = "web"     # use the same env file as web
-      volumes                        = []        # no EFS volumes needed
-      mount_points                   = []        # no EFS needed
-      # container_command              = ["/bin/bash", "-c", "sleep 8000"]
-      container_command              = ["/init_resources/init_resources.sh"]
-      use_task_container_healthcheck = false # one-off task - no healthcheck needed
+      service_name = "celery-beat" // being the 1st container it also executes our custom db-init
       task_environment = [
         { name : "PGPASSWORD", value : module.common_secrets.db_master_password },
-        { name : "PSQL_MASTER_USER", value : module.common_secrets.db_master_username },
-        { name : "PGSSLMODE", value : "require" }
+        { name : "PSQL_MASTER_USER", value : module.common_secrets.db_master_username }
       ]
     }
   ]
@@ -203,7 +189,7 @@ locals {
       c,
       var.ecs_configs[c.service_name],
       {
-        service_name             = "weblate-${c.service_name}"
+        service_name = "weblate-${c.service_name}"
         app_environment_filename = (
           lookup(c, "env_file", null) != null ?
           "weblate-${lookup(c, "env_file", c.service_name)}.env" :

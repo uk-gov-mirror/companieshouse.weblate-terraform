@@ -9,26 +9,6 @@ module "secrets" {
   secrets     = nonsensitive(module.common_secrets.service_secrets_sanitised)
 }
 
-# run a one-off ECS task to initialise the database
-module "ecs-service-db-init" {
-  source = "./module-ecs"
-
-  # the loop will process only 1 iteration (db-init)
-  for_each = {
-    for name, cfg in local.ecs_service_configs :
-    name => cfg
-    if cfg.service_name == "weblate-db-init"
-  }
-
-  config                       = each.value
-  rds_security_group_id        = data.aws_security_group.rds_sg.id        // prev. phase
-  ecs_shared_security_group_id = data.aws_security_group.ecs_shared_sg.id // prev. phase
-
-  depends_on = [
-    module.secrets
-  ]
-}
-
 # run 1st: celery-beat only (which should start before the other ECS services)
 module "ecs-service-celery-beat" {
   source = "./module-ecs"
@@ -48,7 +28,6 @@ module "ecs-service-celery-beat" {
 
   depends_on = [
     module.secrets,
-    module.ecs-service-db-init,
     aws_efs_mount_target.weblate_efs_vpc_mounts
   ]
 }
@@ -58,11 +37,11 @@ module "ecs-service-celery-beat" {
 module "ecs-services" {
   source = "./module-ecs"
 
-  # the loop will process all except 1 (celery-beat/db-init)
+  # the loop will process all except 1 (celery-beat)
   for_each = {
     for name, cfg in local.ecs_service_configs :
     name => cfg
-    if cfg.service_name != "weblate-celery-beat" && cfg.service_name != "weblate-db-init"
+    if cfg.service_name != "weblate-celery-beat"
   }
 
   config                       = each.value
