@@ -30,7 +30,7 @@ variable "service_scaledown_schedule" {
   description = "The schedule to use when scaling down the number of tasks to zero."
   # Typically used to stop all tasks in a service to save resource costs overnight.
   # E.g. a value of '55 19 * * ? *' would be Mon-Sun 7:55pm.  An empty string indicates that no schedule should be created.
-  default = "55 19 * * ? *"
+  default = "55 18 * * ? *"
 }
 variable "service_scaleup_schedule" {
   type        = string

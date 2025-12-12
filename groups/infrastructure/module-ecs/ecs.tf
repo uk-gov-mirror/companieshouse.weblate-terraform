@@ -39,14 +39,17 @@ module "ecs-service" {
   batch_service = var.config.batch_service
 
   # Service performance and scaling configs
-  desired_task_count        = var.config.desired_task_count
-  max_task_count            = var.config.max_task_count
-  required_cpus             = var.config.required_cpus
-  required_memory           = var.config.required_memory
-  service_autoscale_enabled = var.config.service_autoscale_enabled
-  use_capacity_provider     = var.config.use_capacity_provider
-  use_fargate               = var.config.use_fargate
-  fargate_subnets           = var.config.fargate_subnets
+  desired_task_count         = var.config.desired_task_count
+  max_task_count             = var.config.max_task_count
+  required_cpus              = var.config.required_cpus
+  required_memory            = var.config.required_memory
+  service_autoscale_enabled  = var.config.service_autoscale_enabled
+  service_scaledown_schedule = var.config.service_scaledown_schedule
+  service_scaleup_schedule   = var.config.service_scaleup_schedule
+  use_capacity_provider      = var.config.use_capacity_provider
+  use_fargate                = var.config.use_fargate
+  fargate_subnets            = var.config.fargate_subnets
+
 
   # Cloudwatch
   cloudwatch_alarms_enabled = var.config.cloudwatch_alarms_enabled
